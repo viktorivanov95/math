@@ -1,0 +1,69 @@
+from numba import njit
+import numpy as np
+import math
+import time
+number = int(input('Введите число '))
+double_number_sqrt = int((2*number)**(0.5))
+print('Rвадратный корень из двойного введенного числа (', 2*number, ') равен ', double_number_sqrt)
+step = int(input('Введите шаг '))
+number_step = math.ceil(number/step)
+print(number_step)
+start_time = time.time()
+
+@njit
+def main(number):
+    b = 0
+    c = 0
+    f = -1
+    quantity = 0
+    quantity_array = np.arange(number_step)
+    print(quantity_array)
+    for a in range(0, number+1):
+        e = 1
+        g = 1
+        h = 1
+        b = number-a
+        c = number+a
+        f = f+1;
+        if(b!=c and b>double_number_sqrt):
+            for d in range(2, double_number_sqrt+1):
+                if(b%d==0 or c%d==0):   
+                    break
+                elif(b%d!=0 and c%d!=0):
+                    e = e+1; 
+                else: break
+                if(e==double_number_sqrt):            
+                    quantity = quantity + 1
+        if(b>=2 and b<=double_number_sqrt):
+            for d in range(2, double_number_sqrt+1):
+                if(b>d and b%d==0):
+                    break
+                elif(b>d and c%d==0):
+                    break
+                if(b>d and b%d!=0):
+                    g = g+1
+                if(b>d and c%d!=0):
+                    h = h+1 
+                if(b<=d and c%d==0):
+                    break
+                if(b<=d and c%d!=0):
+                    h = h+1
+                if(g == b-1 and h == double_number_sqrt):
+                    quantity = quantity + 1
+        if(f!=0 and f!=number and f%step==0):
+            print(f, ' пар чисел просмотрено. Кол-во пар взаимно простых чисел = ', quantity)
+            quantity_array[math.ceil(f/step)-1] = quantity
+            print('номер ячейки массива равен ', (math.ceil(f/step)-1), 'значение ячейки ', quantity)
+            quantity = 0
+        if(f==number):
+            print(number, ' пар чисел просмотрено. Кол-во пар взаимно простых чисел = ', quantity)
+            quantity_array[math.ceil(f/step)-1] = quantity
+            print('номер ячейки массива равен ', (math.ceil(f/step)-1), 'значение ячейки ', quantity)
+            continue
+    return quantity_array
+
+print(main(number))
+
+print("--- %s seconds ---" % (time.time() - start_time))
+print('Программа завершена')
+input('Press ENTER to exit')

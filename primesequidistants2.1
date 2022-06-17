@@ -1,0 +1,163 @@
+from numba import njit
+import numpy
+import time
+import math
+import psutil
+import matplotlib.pyplot as plt
+
+mem = psutil.virtual_memory()
+print(mem)
+
+#1. Основные переменные
+number = int(input('Введите число: '))
+step = int(input('Введите шаг: '))
+doublenumber = 2*number
+print('Введенное число, умноженное на два: ', doublenumber)
+if(doublenumber>(mem[0]*0.85)):
+    print('Возможно, возникнет ошибка переполнения памяти')
+if(doublenumber<=(mem[0]*0.85)):
+    print('Скореее всего, результат будет получен')
+#2. Генератор простых чисел (без 2)
+def primes(doublenumber):
+    sieve1 = numpy.ones(doublenumber//2, dtype=numpy.bool_)
+    for i in range(3, int(doublenumber**0.5)+1, 2):
+        if(i%1000==1):
+            print('1000!')
+        if sieve1[i//2]:
+            sieve1[i*i//2::i] = False
+    return sieve1
+rawmassivwithouttwo = primes(doublenumber)
+#3. Преобразование массива простых чисел (без 2) из генератора в numpy
+@njit
+def massivwithouttwofunction(n1):
+    massivwithouttwonumpy = 2*numpy.nonzero(rawmassivwithouttwo)[0][1::]+1
+    return massivwithouttwonumpy
+massivwithouttwonumpy = massivwithouttwofunction(1)
+#4. Добавление 2 к массиву простых чисел numpy
+massiv = numpy.insert(massivwithouttwonumpy, 0, 2)
+print('Массив простых чисел от 2 до двойного введенного числа: ' , massiv)  
+#5. Подсчет вычетов для каждого простого числа
+@njit
+def massiv_residue_and_quantity_elements_function(n3):
+    quantityofelementsf = massiv.size
+    massivresiduef = numpy.zeros(quantityofelementsf)
+    counttonumber1 = 0
+    counttonumber2 = 0
+    for i in range(quantityofelementsf):
+        if(massiv[i] < number):
+            massivresiduef[i] = number - massiv[i]
+            counttonumber1 = counttonumber1 + 1
+        if(massiv[i] > number):
+            massivresiduef[i] = massiv[i] - number
+            counttonumber2 = counttonumber2 + 1
+    return quantityofelementsf, massivresiduef, counttonumber1, counttonumber2
+quantityofelements = massiv_residue_and_quantity_elements_function(1)[0]
+print('Количество элементов в массиве простых чисел: ', quantityofelements)
+massiv_residue = massiv_residue_and_quantity_elements_function(1)[1]
+print('Массив вычетов для каждого простого числа: ', massiv_residue)  
+massiv_quantity_elements_1 = massiv_residue_and_quantity_elements_function(1)[2]
+print('Количество элементов в массиве вычетов, меньших, чем введенное число: ', massiv_quantity_elements_1)
+massiv_quantity_elements_2 = massiv_residue_and_quantity_elements_function(1)[3]
+print('Количество элементов в массиве вычетов, больше, чем введенное число: ', massiv_quantity_elements_2)
+massiv_residue_size = massiv_residue.size
+print('Общее количество элементов в массиве вычетов: ', massiv_residue_size)
+massiv_residue_before_number = numpy.flip(massiv_residue[:massiv_quantity_elements_1])
+print('Массив вычетов чисел, меньших, чем введенное число : ', massiv_residue_before_number)
+massiv_residue_after_number = massiv_residue[massiv_quantity_elements_1:]
+print('Массив вычетов чисел, больших, чем введенное число : ', massiv_residue_after_number)
+#6. Вычисление шагов
+@njit
+def step_massiv_function(n4):
+    if(number%step==0):
+        step_massiv_f = numpy.zeros((math.ceil(number/step)))
+        step_massiv_f_last_element_number = step_massiv_f.size
+    if(number%step!=0):
+        step_massiv_f = numpy.zeros(math.ceil(number/step))
+        step_massiv_f_last_element_number = step_massiv_f.size
+    for i in range(1, ((math.ceil(number/step))+1)):
+        if((number%step!=0) and (i == step_massiv_f_last_element_number)):
+            step_massiv_f[i-1] = number
+        elif((number%step!=0) and (i != step_massiv_f_last_element_number)):
+            step_massiv_f[i-1] = i*((number-(number%step))/(step_massiv_f.size-1))
+        elif(number%step==0):
+            step_massiv_f[i-1] = i*((number-(number%step))/(step_massiv_f.size))
+    return step_massiv_f
+step_massiv = step_massiv_function(1)
+print('Массив значений каждого последнего элемента шага: ', step_massiv)
+step_massiv_size = step_massiv.size
+print('Кол-во шагов: ', step_massiv_size)
+#7. Вычисление каждого последнего элемента массива вычетов чисел, меньших, чем введенное число, в соответствии с шагом
+@njit
+def last_elements_of_step_1_function(n5):
+    last_elements_of_step_1_f = numpy.zeros((step_massiv_size)-1)
+    for i in range((step_massiv_size)-1):
+        for j in range((massiv_quantity_elements_1)+1):
+            if(massiv_residue_before_number[j] <= step_massiv[i]):  
+                continue
+            elif(massiv_residue_before_number[j] > step_massiv[i]):
+                last_elements_of_step_1_f[i] = j
+                break
+    return last_elements_of_step_1_f
+last_elements_of_step_1 = last_elements_of_step_1_function(1).astype(int)
+print('Массив последних элементов массива вычетов чисел, меньших, чем введенное число, в соответствии с шагом: ', last_elements_of_step_1) 
+#8. Разделение массива вычетов чисел, меньших, чем введенное число, на части, согласно введенному шагу
+for i in range(len(last_elements_of_step_1)):
+    if((i!= 0 and i!= (len(last_elements_of_step_1)-1)) and (last_elements_of_step_1[i] == 0)):
+        last_elements_of_step_1[i] = last_elements_of_step_1[i-1].copy()
+    elif((i==(len(last_elements_of_step_1)-1)) and (last_elements_of_step_1[i] == 0)):
+        last_elements_of_step_1[i] = massiv_quantity_elements_1+1
+
+divided_massiv_1 = numpy.array_split(massiv_residue_before_number, last_elements_of_step_1)
+print('Разделение массива вычетов чисел, меньших, чем введенное число, на части, согласно введенному шагу: ', divided_massiv_1)
+#9. Вычисление каждого последнего элемента массива вычетов чисел, больших, чем введенное число, в соответствии с шагом
+@njit
+def last_elements_of_step_2_function(n6):
+    last_elements_of_step_2_f = numpy.zeros((step_massiv_size)-1)
+    for i in range((step_massiv_size)-1):
+        for j in range((massiv_quantity_elements_2)+1):
+            if(massiv_residue_after_number[j] <= step_massiv[i]):
+                continue
+            elif(massiv_residue_after_number[j] > step_massiv[i]):
+                last_elements_of_step_2_f[i] = j
+                break
+    return last_elements_of_step_2_f
+last_elements_of_step_2 = last_elements_of_step_2_function(1).astype(int)
+print('Массив последних элементов массива вычетов чисел, больших, чем введенное число, в соответствии с шагом: ', last_elements_of_step_2)
+#10. Разделение массива вычетов чисел, меньших, чем введенное число, на части, согласно введенному шагу
+for i in range(len(last_elements_of_step_2)):
+    if((i!= 0 and i!= (len(last_elements_of_step_2)-1)) and (last_elements_of_step_2[i] == 0)):
+        last_elements_of_step_2[i] = last_elements_of_step_2[i-1].copy()
+    elif((i==(len(last_elements_of_step_2)-1)) and (last_elements_of_step_2[i] == 0)):
+        last_elements_of_step_2[i] = massiv_quantity_elements_2+1    
+divided_massiv_2 = numpy.array_split(massiv_residue_after_number, last_elements_of_step_2)
+print('Разделение массива вычетов чисел, больших, чем введенное число, на части, согласно введенному шагу: ', divided_massiv_2)
+#11. Поиск количества элементов в пересеченных массивах
+def main_function(n7):
+    mainf = numpy.zeros(step_massiv_size)
+    for i in range(step_massiv_size):
+        mainf[i] = (numpy.intersect1d(divided_massiv_1[i], divided_massiv_2[i])).size
+    return mainf
+main = main_function(1)
+print('Итоговый массив: ', main)
+#12. Список с простыми числами, равноудаленными от введенного числа
+print('Запись списка простых чисел, равноудаленных от введенного числа, в файл') 
+quantity_elements_after_and_before = [massiv_quantity_elements_1, massiv_quantity_elements_2]
+after_or_before_is_bigger = numpy.amin(quantity_elements_after_and_before)
+list_residue = numpy.intersect1d(massiv_residue_before_number, massiv_residue_after_number)
+print('Всего пар таких чисел = ', list_residue.size)
+write_list_in_file = open('Простые числа равноудаленные от введенного числа.txt', 'w')
+for i in range(list_residue.size):
+    write_list_in_file.write(str(int(number - list_residue[i])) + ', ' + str(int(number + list_residue[i])) + ' - простые числа, равноудаленные от введенного числа ' + str(int(number)) + ', расстояние между числами = ' + str(int(list_residue[i])) + '\n')
+write_list_in_file.close()
+#13. Построение графика функции
+print('График функции: ')
+fig = plt.figure()
+ax = fig.add_subplot()
+ax.plot(step_massiv, main)
+major_ticks = numpy.arange(step_massiv[0], (step_massiv[-1]+1), step)
+ax.set_xticks(major_ticks)
+ax.grid()
+plt.show()
+print('Программа завершена')
+print('Press ENTER to exit')
+program = input()      

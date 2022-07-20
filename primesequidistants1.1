@@ -2,7 +2,7 @@ import numpy as np
 import time
 number = int(input('Введите число '))
 double_number_sqrt = int((2*number)**(0.5))
-print('Rвадратный корень из двойного введенного числа (', 2*number, ') равен ', double_number_sqrt)
+print('Целая часть арифметического квадратного корня из умноженного на два введенного числа (', 2*number, ') равна ', double_number_sqrt)
 start_time = time.time()
 
 def main(number):
@@ -20,41 +20,44 @@ def main(number):
         if(b!=c and b>double_number_sqrt):
             for d in range(2, double_number_sqrt+1):
                 if(b%d==0 or c%d==0):
-                    print(b, '/', d, '= 0 или ', c, '/', d, '=0, поэтому переходим к следующей паре чисел, d = ', d, ' e =', e)  
+                    print(b, '%', d, '= 0 или ', c, '%', d, '=0, поэтому переходим к следующей паре чисел')  
                     break
                 elif(b%d!=0 and c%d!=0):
                     e = e+1;
-                    print(b, '/', d, '!= 0 и ', c, '/', d, '!=0, проводим проверку этой пары дальше, d = ', d, ' e =', e) 
+                    print(b, '%', d, '!= 0 и ', c, '%', d, '!=0, проводим проверку этой пары дальше') 
                 else: break
                 if(e==double_number_sqrt):            
                     quantity = quantity + 1
-                    print('все возможные делители закончились, следовательно ', b, ' и ', c, ' - простые числа!, quantity = ', quantity)
+                    print('все возможные делители закончились, следовательно ', b, ' и ', c, ' - простые числа!', quantity, ' найденная пара')
         if(b>=2 and b<=double_number_sqrt):
             for d in range(2, double_number_sqrt+1):
+                if(b == 2 and c == 2*number - 2):
+                    print('Все возможные пары чисел для проверки закончились, проверка окончена')
+                    break
                 if(b>d and b%d==0):
-                    print(b, '!=', d, ' и ', b, '/', d, '=', 0, ' поэтому проводим проверку этой пары дальше, d = ', d, ' g =', g)
+                    print(b, '!=', d, ' и ', b, '%', d, '=', 0, ' поэтому проводим проверку этой пары дальше')
                     break
                 elif(b>d and c%d==0):
-                    print(b, '!=', d, ' и ', c, '/', d, '=', 0, ' поэтому проводим проверку этой пары дальше, d = ', d, ' h =', h)
+                    print(b, '!=', d, ' и ', c, '%', d, '=', 0, ' поэтому проводим проверку этой пары дальше')
                     break
                 if(b>d and b%d!=0):
                     g = g+1
-                    print(b, '!=', d, ' и ', b, '/', d, '!=', 0, ' поэтому проводим проверку этой пары дальше, d = ', d, ' g =', g)
+                    print(b, '!=', d, ' и ', b, '%', d, '!=', 0, ' поэтому проводим проверку этой пары дальше')
                 if(b>d and c%d!=0):
                     h = h+1
-                    print(b, '!=', d, ' и ', c, '/', d, '!=', 0, ' поэтому проводим проверку этой пары дальше, d = ', d, ' h =', h) 
+                    print(b, '!=', d, ' и ', c, '%', d, '!=', 0, ' поэтому проводим проверку этой пары дальше') 
                 if(b<=d and c%d==0):
-                    print(b, '<=', d, ' и ', c, '/', d, '=', 0, ' поэтому проводим проверку этой пары дальше, d = ', d, ' h =', h)
+                    print(b, '<=', d, ' и ', c, '%', d, '=', 0, ' поэтому проводим проверку этой пары дальше')
                     break
                 if(b<=d and c%d!=0):
                     h = h+1
-                    print(b, '<=', d, ' и ', c, '/', d, '!=', 0, ' поэтому проводим проверку этой пары дальше, d = ', d, ' h =', h)
+                    print(b, '<=', d, ' и ', c, '%', d, '!=', 0, ' поэтому проводим проверку этой пары дальше')
                 if(g == b-1 and h == double_number_sqrt):
                     quantity = quantity + 1
-                    print(b, ' и ', c, ' - простые числа!, quantity = ', quantity, 'g = ', g, ' h = ', h)
+                    print('все возможные делители закончились, следовательно ', b, ' и ', c, ' - простые числа!', quantity, ' найденная пара')
     return quantity
 
-print(main(number))
+print('Количество найденных пар = ', main(number))
 print("--- %s seconds ---" % (time.time() - start_time))
 print('Программа завершена')
 input('Press ENTER to exit')

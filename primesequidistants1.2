@@ -32,6 +32,7 @@ def main(number):
                 else: break
                 if(e==double_number_sqrt):            
                     quantity = quantity + 1
+                    print(b, ' и ', c, ' - простые числа!')
         if(b>=2 and b<=double_number_sqrt):
             for d in range(2, double_number_sqrt+1):
                 if(b>d and b%d==0):
@@ -48,12 +49,13 @@ def main(number):
                     h = h+1
                 if(g == b-1 and h == double_number_sqrt):
                     quantity = quantity + 1
+                    print(b, ' и ', c, ' - простые числа!')
         if(f!=0 and f!=number and f%step==0):
-            print(f, ' пар чисел просмотрено. Кол-во пар взаимно простых чисел = ', quantity)
+            print(f, ' пар чисел просмотрено. Кол-во пар простых чисел = ', quantity)
             quantity_array[math.ceil(f/step)-1] = quantity
             quantity = 0
         if(f==number):
-            print(number, ' пар чисел просмотрено. Кол-во пар взаимно простых чисел = ', quantity)
+            print(number, ' пар чисел просмотрено. Кол-во пар простых чисел = ', quantity)
             quantity_array[math.ceil(f/step)-1] = quantity
             continue
     return quantity_array

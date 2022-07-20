@@ -7,7 +7,6 @@ double_number_sqrt = int((2*number)**(0.5))
 print('Rвадратный корень из двойного введенного числа (', 2*number, ') равен ', double_number_sqrt)
 step = int(input('Введите шаг '))
 number_step = math.ceil(number/step)
-print(number_step)
 start_time = time.time()
 
 @njit
@@ -17,7 +16,6 @@ def main(number):
     f = -1
     quantity = 0
     quantity_array = np.arange(number_step)
-    print(quantity_array)
     for a in range(0, number+1):
         e = 1
         g = 1
@@ -53,16 +51,14 @@ def main(number):
         if(f!=0 and f!=number and f%step==0):
             print(f, ' пар чисел просмотрено. Кол-во пар взаимно простых чисел = ', quantity)
             quantity_array[math.ceil(f/step)-1] = quantity
-            print('номер ячейки массива равен ', (math.ceil(f/step)-1), 'значение ячейки ', quantity)
             quantity = 0
         if(f==number):
             print(number, ' пар чисел просмотрено. Кол-во пар взаимно простых чисел = ', quantity)
             quantity_array[math.ceil(f/step)-1] = quantity
-            print('номер ячейки массива равен ', (math.ceil(f/step)-1), 'значение ячейки ', quantity)
             continue
     return quantity_array
 
-print(main(number))
+print('Итоговый массив: ', main(number))
 
 print("--- %s seconds ---" % (time.time() - start_time))
 print('Программа завершена')

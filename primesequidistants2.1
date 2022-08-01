@@ -56,15 +56,15 @@ print('Количество элементов в массиве простых 
 massiv_residue = massiv_residue_and_quantity_elements_function(1)[1]
 print('Массив вычетов для каждого простого числа: ', massiv_residue)  
 massiv_quantity_elements_1 = massiv_residue_and_quantity_elements_function(1)[2]
-print('Количество элементов в массиве вычетов, меньших, чем введенное число: ', massiv_quantity_elements_1)
+print('Количество вычетов, соответствующих сгенерированным простым числам, меньших, чем введенное число: ', massiv_quantity_elements_1)
 massiv_quantity_elements_2 = massiv_residue_and_quantity_elements_function(1)[3]
-print('Количество элементов в массиве вычетов, больше, чем введенное число: ', massiv_quantity_elements_2)
+print('Количество вычетов, соответствующих сгенерированным простым числам, больших, чем введенное число: ', massiv_quantity_elements_2)
 massiv_residue_size = massiv_residue.size
 print('Общее количество элементов в массиве вычетов: ', massiv_residue_size)
 massiv_residue_before_number = numpy.flip(massiv_residue[:massiv_quantity_elements_1])
-print('Массив вычетов чисел, меньших, чем введенное число : ', massiv_residue_before_number)
+print('Массив вычетов чисел, соответствующих простым числам, меньших, чем введенное число: ', massiv_residue_before_number)
 massiv_residue_after_number = massiv_residue[massiv_quantity_elements_1:]
-print('Массив вычетов чисел, больших, чем введенное число : ', massiv_residue_after_number)
+print('Массив вычетов чисел, соответствующих простым числам, больших, чем введенное число: ', massiv_residue_after_number)
 #6. Вычисление шагов
 @njit
 def step_massiv_function(n4):
@@ -86,7 +86,7 @@ step_massiv = step_massiv_function(1)
 print('Массив значений каждого последнего элемента шага: ', step_massiv)
 step_massiv_size = step_massiv.size
 print('Кол-во шагов: ', step_massiv_size)
-#7. Вычисление каждого последнего элемента массива вычетов чисел, меньших, чем введенное число, в соответствии с шагом
+#7. Вычисление каждого последнего элемента массива вычетов чисел, соответствующих простым числам, меньших, чем введенное число, в соответствии с шагом
 @njit
 def last_elements_of_step_1_function(n5):
     last_elements_of_step_1_f = numpy.zeros((step_massiv_size)-1)
@@ -99,8 +99,8 @@ def last_elements_of_step_1_function(n5):
                 break
     return last_elements_of_step_1_f
 last_elements_of_step_1 = last_elements_of_step_1_function(1).astype(int)
-print('Массив последних элементов массива вычетов чисел, меньших, чем введенное число, в соответствии с шагом: ', last_elements_of_step_1) 
-#8. Разделение массива вычетов чисел, меньших, чем введенное число, на части, согласно введенному шагу
+print('Массив вычетов 1: ', last_elements_of_step_1) 
+#8. Разделение массива вычетов 1 на части, согласно введенному шагу
 for i in range(len(last_elements_of_step_1)):
     if((i!= 0 and i!= (len(last_elements_of_step_1)-1)) and (last_elements_of_step_1[i] == 0)):
         last_elements_of_step_1[i] = last_elements_of_step_1[i-1].copy()
@@ -108,8 +108,8 @@ for i in range(len(last_elements_of_step_1)):
         last_elements_of_step_1[i] = massiv_quantity_elements_1+1
 
 divided_massiv_1 = numpy.array_split(massiv_residue_before_number, last_elements_of_step_1)
-print('Разделение массива вычетов чисел, меньших, чем введенное число, на части, согласно введенному шагу: ', divided_massiv_1)
-#9. Вычисление каждого последнего элемента массива вычетов чисел, больших, чем введенное число, в соответствии с шагом
+print('Разделение массива вычетов 1 на части, согласно введенному шагу: ', divided_massiv_1)
+#9. Вычисление каждого последнего элемента массива вычетов чисел, соответствующих простым числам, больших, чем введенное число, в соответствии с шагом
 @njit
 def last_elements_of_step_2_function(n6):
     last_elements_of_step_2_f = numpy.zeros((step_massiv_size)-1)
@@ -122,15 +122,15 @@ def last_elements_of_step_2_function(n6):
                 break
     return last_elements_of_step_2_f
 last_elements_of_step_2 = last_elements_of_step_2_function(1).astype(int)
-print('Массив последних элементов массива вычетов чисел, больших, чем введенное число, в соответствии с шагом: ', last_elements_of_step_2)
-#10. Разделение массива вычетов чисел, меньших, чем введенное число, на части, согласно введенному шагу
+print('Массив вычетов 2: ', last_elements_of_step_2)
+#10. Разделение массива вычетов 2 на части, согласно введенному шагу
 for i in range(len(last_elements_of_step_2)):
     if((i!= 0 and i!= (len(last_elements_of_step_2)-1)) and (last_elements_of_step_2[i] == 0)):
         last_elements_of_step_2[i] = last_elements_of_step_2[i-1].copy()
     elif((i==(len(last_elements_of_step_2)-1)) and (last_elements_of_step_2[i] == 0)):
         last_elements_of_step_2[i] = massiv_quantity_elements_2+1    
 divided_massiv_2 = numpy.array_split(massiv_residue_after_number, last_elements_of_step_2)
-print('Разделение массива вычетов чисел, больших, чем введенное число, на части, согласно введенному шагу: ', divided_massiv_2)
+print('Разделение массива вычетов 2 на части, согласно введенному шагу: ', divided_massiv_2)
 #11. Поиск количества элементов в пересеченных массивах
 def main_function(n7):
     mainf = numpy.zeros(step_massiv_size)
